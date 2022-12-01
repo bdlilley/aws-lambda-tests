@@ -89,8 +89,8 @@ func handleLambdaEvent(event events.APIGatewayProxyRequest) (events.APIGatewayPr
 	// AWS API Gateway - you do not need to use this signature to integrate with Gloo; however, if you want
 	// the code to remain compatible with AWS API Gateway in the future then you can
 	return events.APIGatewayProxyResponse{
-		StatusCode:        200,
-		Body:              `{"message": "hello, apigw"}`,
+		StatusCode:        401,
+		Body:              `{"message": "bad request!"}`,
 		Headers:           map[string]string{},
 		MultiValueHeaders: make(map[string][]string),
 		IsBase64Encoded:   false,
