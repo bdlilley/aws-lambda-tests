@@ -1,9 +1,7 @@
 {
+    "foo": "baz",
     "headers": {
         "authorization": "really-secret-key",
         "x-my-header": "my-value"
-    },
-    "body": "my-body",
-    "httpMethod": "GET",
-    "path": "/foo"
+    }
 }
