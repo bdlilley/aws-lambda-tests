@@ -1,9 +1,6 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
-
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/davecgh/go-spew/spew"
@@ -85,16 +82,6 @@ func handleLambdaEvent(event events.APIGatewayProxyRequest) (events.APIGatewayPr
 	// the code to remain compatible with AWS API Gateway in the future then you can use this event type
 	// and set wrapAsApiGateway on the route and Gloo will convert the http request to a events.APIGatewayProxyRequest
 	spew.Dump(event)
-	formatted, err := json.Marshal(&event)
-	if err != nil {
-		return events.APIGatewayProxyResponse{
-			StatusCode:        400,
-			Body:              fmt.Sprintf("failed to marshal event: %s", err),
-			Headers:           map[string]string{},
-			MultiValueHeaders: make(map[string][]string),
-			IsBase64Encoded:   false,
-		}, err
-	}
 
 	// this function returns events.APIGatewayProxyRequest from aws golang SDK
 	// you would use this response type if you want this lambda code to be compatiable with
@@ -102,9 +89,11 @@ func handleLambdaEvent(event events.APIGatewayProxyRequest) (events.APIGatewayPr
 	// AWS API Gateway - you do not need to use this signature to integrate with Gloo; however, if you want
 	// the code to remain compatible with AWS API Gateway in the future then you can
 	return events.APIGatewayProxyResponse{
-		StatusCode:        200,
-		Body:              string(formatted),
-		Headers:           map[string]string{},
+		StatusCode: 200,
+		Body:       payload,
+		Headers: map[string]string{
+			"content-type": "application/json",
+		},
 		MultiValueHeaders: make(map[string][]string),
 		IsBase64Encoded:   false,
 	}, nil
@@ -113,3 +102,8 @@ func handleLambdaEvent(event events.APIGatewayProxyRequest) (events.APIGatewayPr
 func main() {
 	lambda.Start(handleLambdaEvent)
 }
+
+const payload = `
+{
+  "message": "this is a test JSON payload in the body field"  
+}`

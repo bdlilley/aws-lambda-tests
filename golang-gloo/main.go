@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/davecgh/go-spew/spew"
 )
@@ -50,27 +49,23 @@ func main() {
 		sBody, _ := json.Marshal(event)
 
 		// but if I set it to any other value it does appear
-		headersOut["x-request-id"] = "d5a16d04-d8ba-44fe-a8bf-0ebec32e0053"
+		headersOut["x-request-id"] = "d5a16d04"
 
-		return events.APIGatewayProxyResponse{
-			StatusCode: 202,
-			Body:       fmt.Sprintf(`{"hello": "world", "event": %s}`, string(sBody)),
-			Headers:    headersOut,
-			MultiValueHeaders: map[string][]string{
-				"foo": {"baz", "bar"},
-			},
-			IsBase64Encoded: false,
-		}, nil
-		// return GlooResponse{
-		// 	StatusCode: "202",
-		// 	Body: map[string]interface{}{
-		// 		"message": "hello, world",
-		// 		"event":   event,
+		genericPayload := map[string]interface{}{
+			"statusCode": 202,
+			"body":       fmt.Sprintf(`{"hello": "world", "originalEvent": %s}`, string(sBody)),
+			"headers":    headersOut,
+		}
+
+		return genericPayload, nil
+		// return events.APIGatewayProxyResponse{
+		// 	StatusCode: 202,
+		// 	Body:       fmt.Sprintf(`{"hello": "world", "originalEvent": %s}`, string(sBody)),
+		// 	Headers:    headersOut,
+		// 	MultiValueHeaders: map[string][]string{
+		// 		"foo": {"baz", "bar"},
 		// 	},
-		// 	Headers: map[string]interface{}{
-		// 		"x-special":    "sauce",
-		// 		"content-type": "application/json",
-		// 	},
+		// 	IsBase64Encoded: false,
 		// }, nil
 	})
 }
