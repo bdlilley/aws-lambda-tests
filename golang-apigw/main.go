@@ -1,6 +1,9 @@
 package main
 
 import (
+	"encoding/json"
+	"time"
+
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/davecgh/go-spew/spew"
@@ -67,6 +70,7 @@ spec:
             aws:
               logicalName: golang-apigw-latest
               wrapAsApiGateway: true
+              unwrapAsApiGateway: true
 			  unwrapAsApiGateway: true
           upstream:
             name: aws-lambda
@@ -88,9 +92,14 @@ func handleLambdaEvent(event events.APIGatewayProxyRequest) (events.APIGatewayPr
 	//
 	// AWS API Gateway - you do not need to use this signature to integrate with Gloo; however, if you want
 	// the code to remain compatible with AWS API Gateway in the future then you can
+	response := map[string]interface{}{
+		"current time": time.Now(),
+	}
+	responseAsString, _ := json.Marshal(&response)
+
 	return events.APIGatewayProxyResponse{
 		StatusCode: 200,
-		Body:       payload,
+		Body:       string(responseAsString),
 		Headers: map[string]string{
 			"content-type": "application/json",
 		},
@@ -102,8 +111,3 @@ func handleLambdaEvent(event events.APIGatewayProxyRequest) (events.APIGatewayPr
 func main() {
 	lambda.Start(handleLambdaEvent)
 }
-
-const payload = `
-{
-  "message": "this is a test JSON payload in the body field"  
-}`
