@@ -15,6 +15,7 @@ aws lambda create-function \
     --code=S3Bucket=solo-io-terraform-931713665590,S3Key=lambda/${NAME}.zip \
     --handler main \
     --role arn:aws:iam::931713665590:role/lambda-basic \
+    --tags "created-by=benji_lilley,team=product,purpose=product-development" \
     || true
 
 aws lambda update-function-code \
